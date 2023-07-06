@@ -1,5 +1,8 @@
-# flutter_shop
+# PWA MDS
 
+Application POC de E-Commerce sous Flutter, peut être déployé vers iOS, MacOS, Android & Web sans soucis
+
+## Features
 - [x] Récupération items depuis API
   - [x] Bonus: Étoiles générées dynamiquement
 - [x] Ajout Item au panier
