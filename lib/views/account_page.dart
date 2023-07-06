@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shop/models/user.dart';
 
 import '../constants.dart';
-import '../widgets/input_component.dart';
+import '../models/user.api.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -11,88 +12,270 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  String _firstName = '';
-  String _lastName = '';
-  String _pseudo = '';
+  User user = User();
+  bool loading = true;
 
-  String _phone = '';
-  String _email = '';
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
 
-  String _address = '';
-  String _city = '';
-  String _zipCode = '';
+  Future<void> getUser() async {
+    user = await UserApi.getUser();
+    setState(() {
+      loading = false;
+    });
+    print(user);
+  }
 
   @override
   Widget build(BuildContext context) {
+    return loading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : LayoutBuilder(builder: (context, constraints) {
+            if (constraints.maxWidth > 900) {
+              return _buildDesktopLayout();
+            } else {
+              return _buildMobileLayout();
+            }
+          });
+  }
+
+  Widget _buildDesktopLayout() {
     return SafeArea(
         child: Padding(
             padding: EdgeInsets.symmetric(horizontal: defaultPadding),
-            child: ListView(
+            child: ListView(children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      SizedBox(
+                  ColoredBox(
+                    color: Theme.of(context).colorScheme.background,
+                    child: SizedBox(
                         width: 300,
                         height: 300,
-                        child: Placeholder()
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(defaultPadding),
-                          child: Column(
-                            children : [
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: defaultPadding/2, horizontal: defaultPadding/4),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Text('Mon compte',
-                                      style: Theme.of(context).textTheme.headlineMedium,
-                                      textAlign: TextAlign.start,
-                                  ),
-                                ),
-                              ),
-                              Form(
-                                child: Column(
-                                  children: [
-                                    InputComponent(label: 'Prénom', stringSetter: (value) => _firstName = value),
-                                    InputComponent(label: 'Nom', stringSetter: (value) => _lastName = value),
-                                    InputComponent(label: 'Pseudo', stringSetter: (value) => _pseudo = value),
-                                  ],
-                                )
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                        child: Image.network(user.image)),
                   ),
-                Form(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            InputComponent(label: "Téléphone", stringSetter: (value) => _phone = value),
-                            InputComponent(label: "Email", stringSetter: (value) => _email = value),
-                          ]
-                        ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(defaultPadding),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: defaultPadding / 2,
+                                horizontal: defaultPadding / 4),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Text(
+                                'Mon compte',
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                          Form(
+                              child: Column(
+                            children: [
+                              Padding(
+                                  padding: EdgeInsets.all(defaultPadding / 4),
+                                  child: TextFormField(
+                                    decoration: const InputDecoration(
+                                      labelText: "Prénom",
+                                    ),
+                                    initialValue: user.firstName,
+                                  )),
+                              Padding(
+                                  padding: EdgeInsets.all(defaultPadding / 4),
+                                  child: TextFormField(
+                                    decoration: const InputDecoration(
+                                      labelText: "Nom",
+                                    ),
+                                    initialValue: user.lastName,
+                                  )),
+                              Padding(
+                                  padding: EdgeInsets.all(defaultPadding / 4),
+                                  child: TextFormField(
+                                    decoration: const InputDecoration(
+                                      labelText: "Pseudo",
+                                    ),
+                                    initialValue: user.username,
+                                  )),
+                            ],
+                          ))
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            InputComponent(label: "Adresse", stringSetter: (value) => _address = value),
-                            InputComponent(label: "Ville", stringSetter: (value) => _city = value),
-                            InputComponent(label: "Code postal", stringSetter: (value) => _zipCode = value),
-                          ],
-                        ),
-                      )
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+              Form(
+                  child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(children: [
+                      Padding(
+                          padding: EdgeInsets.all(defaultPadding / 4),
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Téléphone",
+                            ),
+                            initialValue: user.phone,
+                          )),
+                      Padding(
+                          padding: EdgeInsets.all(defaultPadding / 4),
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Email",
+                            ),
+                            initialValue: user.email,
+                          )),
+                    ]),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Padding(
+                            padding: EdgeInsets.all(defaultPadding / 4),
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: "Adresse",
+                              ),
+                              initialValue: user.address,
+                            )),
+                        Padding(
+                            padding: EdgeInsets.all(defaultPadding / 4),
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: "Ville",
+                              ),
+                              initialValue: user.city,
+                            )),
+                        Padding(
+                            padding: EdgeInsets.all(defaultPadding / 4),
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: "Code postal",
+                              ),
+                              initialValue: user.postalCode,
+                            )),
+                      ],
+                    ),
                   )
-                )
-              ]
-            )
-        )
-    );
+                ],
+              ))
+            ])));
+  }
+
+  Widget _buildMobileLayout() {
+    return SafeArea(
+        child: ListView(children: [
+      Center(
+        child: Padding(
+          padding: EdgeInsets.all(defaultPadding),
+          child: SizedBox(
+              width: 300,
+              height: 300,
+              child: ColoredBox(
+                  color: Theme.of(context).colorScheme.background,
+                  child: Image.network(user.image))),
+        ),
+      ),
+      Expanded(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: defaultPadding / 2,
+                    horizontal: defaultPadding / 4),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    'Mon compte',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ),
+              Form(
+                  child: Column(
+                children: [
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Prénom",
+                        ),
+                        initialValue: user.firstName,
+                      )),
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Nom",
+                        ),
+                        initialValue: user.lastName,
+                      )),
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Pseudo",
+                        ),
+                        initialValue: user.username,
+                      )),
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Téléphone",
+                        ),
+                        initialValue: user.phone,
+                      )),
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Email",
+                        ),
+                        initialValue: user.email,
+                      )),
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Adresse",
+                        ),
+                        initialValue: user.address,
+                      )),
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Ville",
+                        ),
+                        initialValue: user.city,
+                      )),
+                  Padding(
+                      padding: EdgeInsets.all(defaultPadding / 4),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Code postal",
+                        ),
+                        initialValue: user.postalCode,
+                      ))
+                ],
+              ))
+            ],
+          ),
+        ),
+      ),
+    ]));
   }
 }

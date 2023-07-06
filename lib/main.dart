@@ -4,6 +4,9 @@ import 'package:flutter_shop/views/cart_page.dart';
 import 'package:flutter_shop/views/shop_page.dart';
 import 'package:provider/provider.dart';
 
+import 'models/user.api.dart';
+import 'models/user.dart';
+
 void main() {
   runApp(const App());
 }
@@ -43,12 +46,21 @@ class _FlutterShopState extends State<FlutterShop> {
   @override
   Widget build(BuildContext context) {
     Widget page;
+
+    void Function(int value) changeRoute(int value) {
+      return (int value) {
+        setState(() {
+          selectedIndex = value;
+        });
+      };
+    }
+
     switch (selectedIndex) {
       case 0:
         page = AccountPage();
         break;
       case 1:
-        page = ShopPage();
+        page = ShopPage(changeRoute);
         break;
       case 2:
         page = CartPage();
@@ -57,46 +69,44 @@ class _FlutterShopState extends State<FlutterShop> {
         throw UnimplementedError('No widget for $selectedIndex');
     }
 
-    return LayoutBuilder(
-        builder: (context, constraints) {
-          return Scaffold(
-            body: Row(
-              children: [
-                SafeArea(
-                  child: NavigationRail(
-                    extended: constraints.maxWidth >= 1200,
-                    destinations: const [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.account_circle_sharp),
-                        label: Text('Account'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.home),
-                        label: Text('Home'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.shopping_cart),
-                        label: Text('Cart'),
-                      ),
-                    ],
-                    selectedIndex: selectedIndex,
-                    onDestinationSelected: (value) {
-                      setState(() {
-                        selectedIndex = value;
-                      });
-                    },
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                extended: constraints.maxWidth >= 1200,
+                destinations: const [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.account_circle_sharp),
+                    label: Text('Account'),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    child: page,
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home),
+                    label: Text('Home'),
                   ),
-                ),
-              ],
+                  NavigationRailDestination(
+                    icon: Icon(Icons.shopping_cart),
+                    label: Text('Cart'),
+                  ),
+                ],
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (int value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
+              ),
             ),
-          );
-        }
-    );
+            Expanded(
+              child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: page,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

@@ -7,16 +7,16 @@ class CartController extends GetxController {
   /*
   * Add a product to the cart
    */
-  void addProduct(Product product){
-    if(_products.containsKey(product)){
+  void addProduct(Product product) {
+    if (_products.containsKey(product)) {
       _products[product] += 1;
     } else {
       _products[product] = 1;
     }
   }
 
-  void removeProduct(Product product){
-    if (_products.containsKey(product) && _products[product] == 1){
+  void removeProduct(Product product) {
+    if (_products.containsKey(product) && _products[product] == 1) {
       _products.removeWhere((key, value) => key == product);
     } else {
       _products[product] -= 1;
@@ -30,9 +30,9 @@ class CartController extends GetxController {
 
   get productsCount => _products.length;
 
-  get productsSubtotal => _products.entries.map(
-          (product) => product.key.price * product.value
-  ).toList();
+  get productsSubtotal => _products.entries
+      .map((product) => product.key.price * product.value)
+      .toList();
 
   get total => _products.entries
       .map((product) => product.key.price * product.value)
